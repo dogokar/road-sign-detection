@@ -3,3 +3,6 @@ gradleBuild/
 .idea/
 gradle/wrapper/
 local.properties
+build.gradle
+gradlew.bat
+road-sign-detection.iml
