@@ -31,6 +31,8 @@ import android.os.Trace;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.Display;
+import android.widget.TextView;
+
 import java.util.List;
 import java.util.Vector;
 import org.tensorflow.demo.OverlayView.DrawCallback;
@@ -80,7 +82,7 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
 
   private static final boolean MAINTAIN_ASPECT = true;
 
-  private static final Size DESIRED_PREVIEW_SIZE = new Size(4608, 3456);//new Size(640, 480);
+  private static final Size DESIRED_PREVIEW_SIZE = new Size(640, 480); //new Size(4608, 3456);//
 
   private Classifier classifier;
 
@@ -101,6 +103,7 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
   private Matrix cropToFrameTransform;
 
   private ResultsView resultsView;
+  private TextView     result2View;
 
   private BorderedText borderedText;
 
@@ -137,7 +140,8 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
             INPUT_NAME,
             OUTPUT_NAME);
 
-    resultsView = (ResultsView) findViewById(R.id.results);
+    result2View = (TextView) findViewById(R.id.results2);
+    //resultsView = (ResultsView) findViewById(R.id.results);
     previewWidth = size.getWidth();
     previewHeight = size.getHeight();
 
@@ -228,16 +232,27 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
       ImageUtils.saveBitmap(croppedBitmap);
     }
 
+
+
     runInBackground(
         new Runnable() {
           @Override
           public void run() {
             final long startTime = SystemClock.uptimeMillis();
             final List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap);
+
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
             cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
-            resultsView.setResults(results);
+            //resultsView.setResults(results);
+
+            runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                result2View.setText(results.toString());
+              }
+            });
+
             requestRender();
             computing = false;
           }
